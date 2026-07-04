@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from typing import Annotated
 
@@ -8,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import Person
+from app.models import Interaction, Person
 
 
 router = APIRouter()
@@ -17,6 +18,60 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / 
 
 def _ordered_people(db: Session) -> list[Person]:
     return list(db.scalars(select(Person).order_by(func.lower(Person.name), Person.id)))
+
+
+def _last_contacted_by_person_id(db: Session) -> dict[int, datetime]:
+    rows = db.execute(
+        select(Interaction.person_id, func.max(Interaction.at)).group_by(Interaction.person_id)
+    )
+    return {
+        person_id: _coerce_datetime(last_contacted)
+        for person_id, last_contacted in rows
+        if last_contacted
+    }
+
+
+def _last_contacted_label(last_contacted: datetime | None) -> str:
+    if last_contacted is None:
+        return "never"
+
+    days_ago = (date.today() - last_contacted.date()).days
+    if days_ago == 0:
+        return "last contacted today"
+    if days_ago == 1:
+        return "last contacted 1 day ago"
+    return f"last contacted {days_ago} days ago"
+
+
+def _person_interactions(db: Session, person_id: int) -> list[Interaction]:
+    return list(
+        db.scalars(
+            select(Interaction)
+            .where(Interaction.person_id == person_id)
+            .order_by(Interaction.at.desc(), Interaction.id.desc())
+        )
+    )
+
+
+def _person_last_contacted(db: Session, person_id: int) -> datetime | None:
+    last_contacted = db.scalar(
+        select(func.max(Interaction.at)).where(Interaction.person_id == person_id)
+    )
+    if last_contacted is None:
+        return None
+    return _coerce_datetime(last_contacted)
+
+
+def _coerce_datetime(value: datetime | str) -> datetime:
+    if isinstance(value, datetime):
+        return value
+    return datetime.fromisoformat(value)
+
+
+def _parse_interaction_at(value: str | None) -> datetime:
+    if value is None or value.strip() == "":
+        return datetime.now()
+    return datetime.combine(date.fromisoformat(value.strip()), time.min)
 
 
 def _clean_optional(value: str | None) -> str | None:
@@ -66,12 +121,41 @@ def _form_error_response(
     )
 
 
+def _person_detail_response(
+    request: Request,
+    db: Session,
+    person: Person,
+    error: str | None = None,
+    status_code: int = 200,
+):
+    last_contacted = _person_last_contacted(db, person.id)
+    return templates.TemplateResponse(
+        request,
+        "person_detail.html",
+        {
+            "person": person,
+            "interactions": _person_interactions(db, person.id),
+            "last_contacted": last_contacted,
+            "error": error,
+        },
+        status_code=status_code,
+    )
+
+
 @router.get("/people")
 def people_list(request: Request, db: Annotated[Session, Depends(get_db)]):
+    people = _ordered_people(db)
+    last_contacted_by_person_id = _last_contacted_by_person_id(db)
     return templates.TemplateResponse(
         request,
         "people_list.html",
-        {"people": _ordered_people(db)},
+        {
+            "people": people,
+            "last_contacted_labels": {
+                person.id: _last_contacted_label(last_contacted_by_person_id.get(person.id))
+                for person in people
+            },
+        },
     )
 
 
@@ -86,6 +170,15 @@ def new_person(request: Request):
             "error": None,
         },
     )
+
+
+@router.get("/people/{person_id}")
+def person_detail(request: Request, person_id: int, db: Annotated[Session, Depends(get_db)]):
+    person = db.get(Person, person_id)
+    if person is None:
+        raise HTTPException(status_code=404)
+
+    return _person_detail_response(request, db, person)
 
 
 @router.post("/people")
@@ -127,6 +220,42 @@ def create_person(
     )
     db.commit()
     return RedirectResponse("/people", status_code=303)
+
+
+@router.post("/people/{person_id}/interactions")
+def create_interaction(
+    request: Request,
+    person_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    note: Annotated[str | None, Form()] = None,
+    at: Annotated[str | None, Form()] = None,
+):
+    person = db.get(Person, person_id)
+    if person is None:
+        raise HTTPException(status_code=404)
+    if not note or not note.strip():
+        return _person_detail_response(
+            request,
+            db,
+            person,
+            error="Note is required.",
+            status_code=400,
+        )
+
+    try:
+        parsed_at = _parse_interaction_at(at)
+    except ValueError:
+        return _person_detail_response(
+            request,
+            db,
+            person,
+            error="Interaction date must be a valid date.",
+            status_code=400,
+        )
+
+    db.add(Interaction(person_id=person.id, at=parsed_at, note=note.strip()))
+    db.commit()
+    return RedirectResponse(f"/people/{person.id}", status_code=303)
 
 
 @router.get("/people/{person_id}/edit")
