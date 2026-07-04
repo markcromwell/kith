@@ -34,21 +34,36 @@
       ul {
         padding-left: 1.25rem;
       }
+
+      li {
+        margin: 0.75rem 0;
+      }
+
+      form {
+        display: inline;
+        margin-left: 0.5rem;
+      }
     </style>
   </head>
   <body>
     <main>
-      {% if people %}
-        <h1>People</h1>
-        <p><a href="/people/new">Add someone</a></p>
+      {% if overdue_people %}
+        <h1>Reach out</h1>
+        <p><a href="/people">People</a> | <a href="/people/new">Add someone</a></p>
         <ul>
-          {% for person in people %}
-            <li>{{ person.name }}</li>
+          {% for item in overdue_people %}
+            <li>
+              <a href="/people/{{ item.person.id }}">{{ item.person.name }}</a>
+              <span>{{ item.label }}</span>
+              <form action="/people/{{ item.person.id }}/reached-out" method="post">
+                <button type="submit">Mark reached out</button>
+              </form>
+            </li>
           {% endfor %}
         </ul>
       {% else %}
         <h1>No one to reach out to yet</h1>
-        <p><a href="/people/new">Add someone</a></p>
+        <p><a href="/people">People</a> | <a href="/people/new">Add someone</a></p>
       {% endif %}
     </main>
   </body>

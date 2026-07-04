@@ -1,7 +1,7 @@
 # Program Map: Kith
 
-<!--GENERATED:BEGIN hash=f05df03696574b1318758fc07ebae9a92e410bc527c69bc070bac6361b71121b sig= job=0 commit=42cad6dd8a3dbcf97ec79b5c50d9a962979bd78a-->
-<!--Generated 2026-07-04T07:56:27.671723+00:00. Do not edit — will be overwritten.-->
+<!--GENERATED:BEGIN hash=c352189051711bae25f99ae23c92aa315073b3401ed322f510a3d601d68df667 sig= job=0 commit=c85e6acee210e05e522b2c7378afbb68de3477fb-->
+<!--Generated 2026-07-04T08:55:58.197278+00:00. Do not edit — will be overwritten.-->
 
 ## II. Canonical Data Schema [GENERATED — do not edit]
 
@@ -34,6 +34,7 @@ app/config.py
 app/db.py
 app/health.py
 app/models.py
+app/overdue.py
 app/routers/__init__.py
 app/routers/home.py
 app/routers/people.py
@@ -71,6 +72,7 @@ scripts/test_unit.py
 | POST | `/people/{person_id}/delete` | 200 |
 | GET | `/people/{person_id}/edit` | 200 |
 | POST | `/people/{person_id}/interactions` | 200 |
+| POST | `/people/{person_id}/reached-out` | 200 |
 
 <!--GENERATED:END-->
 
