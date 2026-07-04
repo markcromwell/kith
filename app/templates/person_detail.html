@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kith - {{ person.name }}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{{ person.name }}</h1>
+      <dl>
+        <dt>Relationship</dt>
+        <dd>{{ person.relationship if person.relationship else "Not set" }}</dd>
+        <dt>How met</dt>
+        <dd>{{ person.how_met if person.how_met else "Not set" }}</dd>
+        <dt>Notes</dt>
+        <dd>{{ person.notes if person.notes else "Not set" }}</dd>
+        <dt>Cadence days</dt>
+        <dd>{{ person.cadence_days }}</dd>
+        <dt>Last contacted</dt>
+        <dd>{{ last_contacted.date() if last_contacted else "never" }}</dd>
+      </dl>
+
+      <h2>Log an interaction</h2>
+      {% if error %}
+        <p role="alert">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="/people/{{ person.id }}/interactions">
+        <p>
+          <label for="at">Date</label>
+          <input id="at" name="at" type="date">
+        </p>
+        <p>
+          <label for="note">Note</label>
+          <textarea id="note" name="note" required></textarea>
+        </p>
+        <button type="submit">Log interaction</button>
+      </form>
+
+      <h2>Timeline</h2>
+      {% if interactions %}
+        <ol>
+          {% for interaction in interactions %}
+            <li>
+              <time datetime="{{ interaction.at.date() }}">{{ interaction.at.date() }}</time>
+              {{ interaction.note }}
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p>No interactions logged yet</p>
+      {% endif %}
+
+      <p><a href="/people">Back to people</a></p>
+    </main>
+  </body>
+</html>

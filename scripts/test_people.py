@@ -54,6 +54,25 @@ def test_create_person_then_list_shows_person(sqlite_app):
     assert "Ada Lovelace" in list_resp.text
     assert "Friend" in list_resp.text
     assert "14" in list_resp.text
+    assert "never" in list_resp.text
+
+
+def test_people_list_shows_last_contacted_label(sqlite_app):
+    with TestClient(sqlite_app()) as client:
+        client.post("/people", data={"name": "Dorothy Vaughan", "cadence_days": "28"})
+        person_id = _person_id_by_name("Dorothy Vaughan")
+        never_resp = client.get("/people")
+        client.post(
+            f"/people/{person_id}/interactions",
+            data={"note": "Sent a letter", "at": "2026-07-03"},
+        )
+        contacted_resp = client.get("/people")
+
+    assert never_resp.status_code == 200
+    assert "Dorothy Vaughan" in never_resp.text
+    assert "never" in never_resp.text
+    assert contacted_resp.status_code == 200
+    assert "last contacted 1 day ago" in contacted_resp.text
 
 
 def test_missing_name_rerenders_form_without_creating_person(sqlite_app):

@@ -16,6 +16,8 @@
               {{ person.name }}
               {% if person.relationship %} - {{ person.relationship }}{% endif %}
               - every {{ person.cadence_days }} days
+              - {{ last_contacted_labels[person.id] }}
+              <a href="/people/{{ person.id }}">View</a>
               <a href="/people/{{ person.id }}/edit">Edit</a>
               <form method="post" action="/people/{{ person.id }}/delete">
                 <button type="submit">Delete</button>
