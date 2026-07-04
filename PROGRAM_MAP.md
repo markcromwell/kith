@@ -1,27 +1,62 @@
 # Program Map: Kith
 
-<!--GENERATED:BEGIN hash=UNINITIALIZED-->
-<!--This map is maintained automatically by Code Forge.-->
-<!--Sections II, III, IV are generated from AST after each successful merge.-->
-<!--Do not edit sections II, III, IV manually — they will be overwritten.-->
-
-## I. Implementation Status [CURATED]
-_No specs merged yet._
-
----
+<!--GENERATED:BEGIN hash=11c4b5fd161944b695b65e330ca4442042bb920c98fbea7324260d1a312e90c1 sig= job=0 commit=20ad19f9b06d6c510623986ac8563b58ffacf17a-->
+<!--Generated 2026-07-04T06:15:37.519364+00:00. Do not edit — will be overwritten.-->
 
 ## II. Canonical Data Schema [GENERATED — do not edit]
-_No models detected yet._
 
----
+### `interaction`
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+
+### `person`
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
 
 ## III. File and Module Map [GENERATED — do not edit]
-_Will be populated after first merge._
 
----
+```
+.dockerignore
+.env.example
+.github/workflows/ci.yml
+.gitignore
+Dockerfile
+PROGRAM_MAP.md
+README.md
+alembic.ini
+alembic/env.py
+alembic/script.py.mako
+alembic/versions/0001_baseline.py
+app/__init__.py
+app/config.py
+app/db.py
+app/health.py
+app/models.py
+app/routers/__init__.py
+app/routers/home.py
+app/templates/home.html
+docker-compose.yml
+main.py
+pyproject.toml
+requirements.in
+requirements.lock
+scripts/__init__.py
+scripts/setup.py
+scripts/smoke_boot.py
+scripts/test_db.py
+scripts/test_home.py
+scripts/test_migration.py
+scripts/test_unit.py
+```
 
 ## IV. API Surface [GENERATED — do not edit]
-_No routes detected yet._
+
+| Method | Path | Status Code |
+|--------|------|-------------|
+| GET | `/` | 200 |
+| GET | `/health` | 200 |
 
 <!--GENERATED:END-->
 
