@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import settings
 from app.models import Base
@@ -12,6 +13,15 @@ def _connect_args(database_url: str) -> dict[str, bool]:
 
 
 engine: Engine = create_engine(settings.database_url, connect_args=_connect_args(settings.database_url))
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db():
+    db: Session = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def init_sqlite_schema() -> None:

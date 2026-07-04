@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kith - People</title>
+  </head>
+  <body>
+    <main>
+      <h1>People</h1>
+      <p><a href="/people/new">Add someone</a></p>
+      {% if people %}
+        <ul>
+          {% for person in people %}
+            <li>
+              {{ person.name }}
+              {% if person.relationship %} - {{ person.relationship }}{% endif %}
+              - every {{ person.cadence_days }} days
+              <a href="/people/{{ person.id }}/edit">Edit</a>
+              <form method="post" action="/people/{{ person.id }}/delete">
+                <button type="submit">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No one to reach out to yet</p>
+      {% endif %}
+    </main>
+  </body>
+</html>
