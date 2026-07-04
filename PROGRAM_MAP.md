@@ -1,7 +1,7 @@
 # Program Map: Kith
 
-<!--GENERATED:BEGIN hash=11c4b5fd161944b695b65e330ca4442042bb920c98fbea7324260d1a312e90c1 sig= job=0 commit=20ad19f9b06d6c510623986ac8563b58ffacf17a-->
-<!--Generated 2026-07-04T06:15:37.519364+00:00. Do not edit — will be overwritten.-->
+<!--GENERATED:BEGIN hash=08d1648967ed05702064ec77c5075b9ab3d711d463b54dd026d4f7c30829cff2 sig= job=0 commit=2f8ec8781defb1430c0b0b33ddc5ae903543b4f2-->
+<!--Generated 2026-07-04T07:01:55.257978+00:00. Do not edit — will be overwritten.-->
 
 ## II. Canonical Data Schema [GENERATED — do not edit]
 
@@ -36,7 +36,10 @@ app/health.py
 app/models.py
 app/routers/__init__.py
 app/routers/home.py
+app/routers/people.py
 app/templates/home.html
+app/templates/people_form.html
+app/templates/people_list.html
 docker-compose.yml
 main.py
 pyproject.toml
@@ -48,6 +51,7 @@ scripts/smoke_boot.py
 scripts/test_db.py
 scripts/test_home.py
 scripts/test_migration.py
+scripts/test_people.py
 scripts/test_unit.py
 ```
 
@@ -57,6 +61,12 @@ scripts/test_unit.py
 |--------|------|-------------|
 | GET | `/` | 200 |
 | GET | `/health` | 200 |
+| GET | `/people` | 200 |
+| POST | `/people` | 200 |
+| GET | `/people/new` | 200 |
+| POST | `/people/{person_id}` | 200 |
+| POST | `/people/{person_id}/delete` | 200 |
+| GET | `/people/{person_id}/edit` | 200 |
 
 <!--GENERATED:END-->
 
