@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kith - Person</title>
+  </head>
+  <body>
+    <main>
+      <h1>{% if person and person.id %}Edit person{% else %}Add someone{% endif %}</h1>
+      {% if error %}
+        <p role="alert">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="{{ action }}">
+        <p>
+          <label for="name">Name</label>
+          <input id="name" name="name" required value="{{ person.name if person and person.name else '' }}">
+        </p>
+        <p>
+          <label for="relationship">Relationship</label>
+          <input id="relationship" name="relationship" value="{{ person.relationship if person and person.relationship else '' }}">
+        </p>
+        <p>
+          <label for="how_met">How met</label>
+          <input id="how_met" name="how_met" value="{{ person.how_met if person and person.how_met else '' }}">
+        </p>
+        <p>
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes">{{ person.notes if person and person.notes else '' }}</textarea>
+        </p>
+        <p>
+          <label for="cadence_days">Cadence days</label>
+          <input id="cadence_days" name="cadence_days" type="number" value="{{ person.cadence_days if person and person.cadence_days else 28 }}">
+        </p>
+        <button type="submit">Save</button>
+      </form>
+      <p><a href="/people">Back to people</a></p>
+    </main>
+  </body>
+</html>

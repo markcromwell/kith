@@ -30,11 +30,26 @@
         font-weight: 650;
         line-height: 1.2;
       }
+
+      ul {
+        padding-left: 1.25rem;
+      }
     </style>
   </head>
   <body>
     <main>
-      <h1>No one to reach out to yet</h1>
+      {% if people %}
+        <h1>People</h1>
+        <p><a href="/people/new">Add someone</a></p>
+        <ul>
+          {% for person in people %}
+            <li>{{ person.name }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <h1>No one to reach out to yet</h1>
+        <p><a href="/people/new">Add someone</a></p>
+      {% endif %}
     </main>
   </body>
 </html>
